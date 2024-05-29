@@ -1,0 +1,53 @@
+!Acessando o modo EXEC Privilegiado
+enable
+
+!Configuração de Data/Hora Router
+clock set 19:54:00 05 May 2024
+
+	!Acessando o modo de Configuração Global de comandos
+	configure terminal
+
+		!Configuração do nome do router
+		hostname rt-01
+
+		!Habilitando o serviço de criptografia de senhas do Tipo-7 Password 
+		service password-encryption
+
+		!Habilitando o serviço de marcação de Data/Hora detalhado nos Logs
+		service timestamps log datetime msec
+		service timestamps debug datetime msec
+
+		!Desativando a resolução de nomes de domínio
+		no ip domain-lookup
+
+		!Configuração do Banner da mensagem do dia
+		banner motd #AVISO: acesso autorizado somente a funcionarios#
+		
+		!Habilitando o comprimento mínimo da criação das senhas do Tipo-5 ou Tipo-7
+		security passwords min-length 8
+
+		!Habilitando o uso senha do Tipo-5 Secret para acessar o modo EXEC Privilegiado
+		enable secret 123@senac
+
+		!Criação dos usuários locais utilizando senhas do Tipo-5 ou Tipo-7 e privilégios diferenciados
+		username senac secret 123@senac
+		username vaamonde password 123@senac
+		username admin privilege 15 secret 123@senac
+		
+		!Configuração do nome de domínio FQDN (Fully Qualified Domain Name)
+		ip domain-name senac.br
+
+		!Criação da chave de criptografia e habilitando o serviço do SSH Server local
+		crypto key generate rsa general-keys modulus 1024
+
+		!Habilitando a versão 2 do serviço de SSH Server
+		ip ssh version 2
+
+		!Habilitando o tempo de inatividade para novas conexões do SSH Server
+		ip ssh time-out 60
+
+		!Habilitando o número máximo de tentativas de conexões simultâneas no SSH Server
+		ip ssh authentication-retries 2
+		
+		!Bloqueando tentativas de conexões simultâneas com falha de autenticação no Router
+		login block-for 120 attempts 2 within 60
